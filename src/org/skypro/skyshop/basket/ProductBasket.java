@@ -48,8 +48,9 @@ public class ProductBasket {
             if (product != null) {
                 System.out.println(product.getName() + ":" + product.getPrice());
             }
-            System.out.println("Итого " + calcTotalPriceBasket());
+
         }
+        System.out.println("Итого " + calcTotalPriceBasket());
     }
 
     public boolean containsProduct(String productName) {
