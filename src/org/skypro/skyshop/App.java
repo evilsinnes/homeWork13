@@ -53,10 +53,12 @@ public class App {
         ProductBasket basket3 = new ProductBasket();
         basket3.printProductInBasket();
 
-        System.out.println("Есть ли в корзине Банан? " + basket1.containsProduct("Банан"));
-        System.out.println("Есть ли в корзине Груша? " + basket1.containsProduct("Груша"));
+
 
         System.out.println(basket3.calcTotalPriceBasket());
+
+        System.out.println("Есть ли в корзине Банан? " + basket3.containsProduct("Банан"));
+        System.out.println("Есть ли в корзине Груша? " + basket3.containsProduct("Груша"));
     }
 
 
