@@ -1,24 +1,43 @@
 package org.skypro.skyshop.search;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SearchEngine {
-    private  final Searchable[] searchables;
-    private  int count;
+    private final List<Searchable> searchables;
 
-    public SearchEngine(int capacity) {
-        this.searchables =  new Searchable[capacity];
-        this.count = 0;
+    public SearchEngine() {
+        this.searchables = new ArrayList<>();
     }
+
     public void add(Searchable searchable) {
-        if (count < searchables.length) {
-            searchables[count] = searchable;
-            count++;
-        } else {
-            System.out.println("Невозможно добавить элемент: поисковый движок переполнен!");
-        }
+        searchables.add(searchable);
     }
 
-    public Searchable findBestMatch (String query) throws BestResultNotFound {
-        if (query == null || query.isBlank()){
+    public List<Searchable> search(String query) {
+        List<Searchable> results = new ArrayList<>();
+
+        if (query == null || query.isBlank()) {
+            return results;
+        }
+
+        String lowerCaseQuery = query.toLowerCase();
+
+        for (Searchable searchable : searchables) {
+            if (searchable != null) {
+                String lowerCaseSearchTerm = searchable.getSearchTerm().toLowerCase();
+                if (lowerCaseSearchTerm.contains(lowerCaseQuery)) {
+                    results.add(searchable);
+                }
+            }
+        }
+
+        return results;
+    }
+
+
+    public Searchable findBestMatch(String query) throws BestResultNotFound {
+        if (query == null || query.isBlank()) {
             throw new IllegalArgumentException("Поисковый запрос не может быть пустым.");
         }
         Searchable bestMatch = null;
@@ -43,6 +62,7 @@ public class SearchEngine {
 
         return bestMatch;
     }
+
     private int countOccurrences(String text, String substring) {
         int count = 0;
         int index = 0;
@@ -52,28 +72,4 @@ public class SearchEngine {
         }
         return count;
     }
-
-    public Searchable[] search(String query) {
-        Searchable[] results = new Searchable[5];
-        int foundCount = 0;
-
-        String lowerCaseQuery = query.toLowerCase();
-        for (Searchable searchable : searchables) {
-            if (searchable != null) {
-
-                String lowerCaseSearchTerm = searchable.getSearchTerm().toLowerCase();
-                if (lowerCaseSearchTerm.contains(lowerCaseQuery)) {
-                    results[foundCount] = searchable;
-                    foundCount++;
-                    if (foundCount == 5) {
-                        break;
-                    }
-                }
-            }
-        }
-
-        return results;
-    }
-
-
 }
