@@ -10,55 +10,103 @@ import org.skypro.skyshop.search.SearchEngine;
 import org.skypro.skyshop.search.Searchable;
 import org.skypro.skyshop.search.BestResultNotFound;
 
+import java.util.List;
+
 public class App {
 
 
     public static void main(String[] args) {
-        SearchEngine searchEngine = new SearchEngine(10);
+        ProductBasket basket = new ProductBasket();
+        Product apple = new SimpleProduct("Яблоко", 50);
+        Product banana = new DiscountedProduct("Банан", 100, 20);
+        Product orange = new FixPriceProduct("Апельсин");
 
-                searchEngine.add(new SimpleProduct("Яблоко", 50));
+        basket.addProduct(apple);
+        basket.addProduct(banana);
+        basket.addProduct(orange);
+        System.out.println("\nСодержимое корзины:");
+        basket.printProductInBasket();
+
+        List<Product> removedProducts = basket.removeProductByName("Банан");
+        System.out.println("\nУдаленные продукты:");
+        for (Product product : removedProducts) {
+            System.out.println(product);
+        }
+        System.out.println("\nСодержимое корзины после удаления:");
+        basket.printProductInBasket();
+
+
+        removedProducts = basket.removeProductByName("Груша");
+        if (removedProducts.isEmpty()) {
+            System.out.println("\nСписок удаленных продуктов пуст.");
+        }
+        System.out.println("\nСодержимое корзины после попытки удаления:");
+        basket.printProductInBasket();
+
+        SearchEngine searchEngine = new SearchEngine();
+        searchEngine.add(new SimpleProduct("Яблоко", 50));
         searchEngine.add(new DiscountedProduct("Банан", 100, 20));
         searchEngine.add(new Article("Как выбрать яблоки", "Выбирайте свежие и сочные яблоки."));
 
-
+        List<Searchable> results = searchEngine.search("яблоко");
+        System.out.println("Результаты поиска по запросу 'яблоко':");
+        for (Searchable result : results) {
+            System.out.println(result.getStringRepresentation());
+        }
         try {
             var bestMatch = searchEngine.findBestMatch("яблоко");
-            System.out.println("Найден лучший результат: " + bestMatch.getStringRepresentation());
+            System.out.println("\nНайден лучший результат: " + bestMatch.getStringRepresentation());
         } catch (BestResultNotFound e) {
-            System.out.println("Ошибка: " + e.getMessage());
-        }
-
-
-        try {
-            var bestMatch = searchEngine.findBestMatch("апельсин");
-            System.out.println("Найден лучший результат: " + bestMatch.getStringRepresentation());
-        } catch (BestResultNotFound e) {
-            System.out.println("Ошибка: " + e.getMessage());
-        }
-
-
-        try {
-            // Неправильное название (пустая строка)
-            Product invalidProduct = new SimpleProduct("", 100);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка: " + e.getMessage());
-        }
-
-        try {
-            // Неправильная цена (0)
-            Product invalidPrice = new SimpleProduct("Яблоко", 0);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка: " + e.getMessage());
-        }
-
-        try {
-            // Неправильная скидка (101)
-            Product invalidDiscount = new DiscountedProduct("Банан", 100, 101);
-        } catch (IllegalArgumentException e) {
             System.out.println("Ошибка: " + e.getMessage());
         }
     }
 }
+
+//        SearchEngine searchEngine = new SearchEngine(10);
+//
+//                searchEngine.add(new SimpleProduct("Яблоко", 50));
+//        searchEngine.add(new DiscountedProduct("Банан", 100, 20));
+//        searchEngine.add(new Article("Как выбрать яблоки", "Выбирайте свежие и сочные яблоки."));
+//
+//
+//        try {
+//            var bestMatch = searchEngine.findBestMatch("яблоко");
+//            System.out.println("Найден лучший результат: " + bestMatch.getStringRepresentation());
+//        } catch (BestResultNotFound e) {
+//            System.out.println("Ошибка: " + e.getMessage());
+//        }
+//
+//
+//        try {
+//            var bestMatch = searchEngine.findBestMatch("апельсин");
+//            System.out.println("Найден лучший результат: " + bestMatch.getStringRepresentation());
+//        } catch (BestResultNotFound e) {
+//            System.out.println("Ошибка: " + e.getMessage());
+//        }
+//
+//
+//        try {
+//            // Неправильное название (пустая строка)
+//            Product invalidProduct = new SimpleProduct("", 100);
+//        } catch (IllegalArgumentException e) {
+//            System.out.println("Ошибка: " + e.getMessage());
+//        }
+//
+//        try {
+//            // Неправильная цена (0)
+//            Product invalidPrice = new SimpleProduct("Яблоко", 0);
+//        } catch (IllegalArgumentException e) {
+//            System.out.println("Ошибка: " + e.getMessage());
+//        }
+//
+//        try {
+//            // Неправильная скидка (101)
+//            Product invalidDiscount = new DiscountedProduct("Банан", 100, 101);
+//        } catch (IllegalArgumentException e) {
+//            System.out.println("Ошибка: " + e.getMessage());
+//        }
+//    }
+//}
 
 //    ProductBasket basket = new ProductBasket();
 //
