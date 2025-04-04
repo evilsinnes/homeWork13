@@ -11,6 +11,7 @@ import org.skypro.skyshop.search.Searchable;
 import org.skypro.skyshop.search.BestResultNotFound;
 import java.util.Map;
 import java.util.List;
+import java.util.Set;
 
 public class App {
 
@@ -28,9 +29,9 @@ public class App {
         searchEngine.add(new DiscountedProduct("Банан", 100, 20));
         searchEngine.add(new Article("Как выбрать яблоко", "Выбирайте свежие и сочные яблоки."));
 
-        Map<String, Searchable> searchResults = searchEngine.search("яблоко");
-        System.out.println("Результаты поиска (отсортированы по имени):");
-        searchResults.forEach((name, item) ->
+        Set<Searchable> results = searchEngine.search("яблоко");
+        System.out.println("Результаты поиска (отсортированы по длине названия и имени):");
+        results.forEach(item ->
                 System.out.println(item.getStringRepresentation())
         );
     }
