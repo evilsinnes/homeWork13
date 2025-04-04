@@ -1,7 +1,7 @@
 package org.skypro.skyshop.search;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SearchEngine {
     private final List<Searchable> searchables;
@@ -14,26 +14,37 @@ public class SearchEngine {
         searchables.add(searchable);
     }
 
-    public List<Searchable> search(String query) {
-        List<Searchable> results = new ArrayList<>();
-
-        if (query == null || query.isBlank()) {
-            return results;
-        }
-
-        String lowerCaseQuery = query.toLowerCase();
-
-        for (Searchable searchable : searchables) {
-            if (searchable != null) {
-                String lowerCaseSearchTerm = searchable.getSearchTerm().toLowerCase();
-                if (lowerCaseSearchTerm.contains(lowerCaseQuery)) {
-                    results.add(searchable);
-                }
-            }
-        }
-
-        return results;
+    public Map<String, Searchable> search(String query) {
+        return searchables.stream()
+                .filter(Objects::nonNull)
+                .filter(s -> s.getSearchTerm().toLowerCase().contains(query.toLowerCase()))
+                .sorted(Comparator.comparing(Searchable::getName))
+                .collect(Collectors.toMap(
+                        Searchable::getName,
+                        s -> s,
+                        (existing, replacement) -> existing, TreeMap::new));
     }
+
+//    public List<Searchable> search(String query) {
+//        List<Searchable> results = new ArrayList<>();
+//
+//        if (query == null || query.isBlank()) {
+//            return results;
+//        }
+//
+//        String lowerCaseQuery = query.toLowerCase();
+//
+//        for (Searchable searchable : searchables) {
+//            if (searchable != null) {
+//                String lowerCaseSearchTerm = searchable.getSearchTerm().toLowerCase();
+//                if (lowerCaseSearchTerm.contains(lowerCaseQuery)) {
+//                    results.add(searchable);
+//                }
+//            }
+//        }
+//
+//        return results;
+//    }
 
 
     public Searchable findBestMatch(String query) throws BestResultNotFound {
