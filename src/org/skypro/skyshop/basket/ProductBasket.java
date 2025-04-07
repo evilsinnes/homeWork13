@@ -14,13 +14,11 @@ public class ProductBasket {
     }
 
     public void addProduct(Product product) {
-        System.out.println("Добавить продукт" + product);
         productsMap.computeIfAbsent(product.getName(), k -> new ArrayList<>()).add(product);
     }
 
     public int getTotalPrice() {
         System.out.println();
-        System.out.println("ProductBasket.getTotalPrice");
         return productsMap.values().stream()
                 .flatMap(List::stream)
                 .mapToInt(Product::getPrice)
@@ -54,7 +52,6 @@ public class ProductBasket {
     }
 
     public void clearBasket() {
-        System.out.println("ProductBasket.clearBasket");
         productsMap.clear();
         System.out.println("Корзина очищена.");
     }
