@@ -4,47 +4,31 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class SearchEngine {
-    private final List<Searchable> searchables;
+    private final Set<Searchable> searchables = new HashSet<>();
+    private final SearchableComparator comparator = new SearchableComparator();
 
-    public SearchEngine() {
-        this.searchables = new ArrayList<>();
-    }
+
 
     public void add(Searchable searchable) {
         searchables.add(searchable);
     }
 
-    public Map<String, Searchable> search(String query) {
+
+    public Set<Searchable> search(String query) {
+        if (query == null || query.isBlank()) {
+            return Collections.emptySet();
+        }
+
+        String lowerCaseQuery = query.toLowerCase();
         return searchables.stream()
                 .filter(Objects::nonNull)
-                .filter(s -> s.getSearchTerm().toLowerCase().contains(query.toLowerCase()))
-                .sorted(Comparator.comparing(Searchable::getName))
-                .collect(Collectors.toMap(
-                        Searchable::getName,
-                        s -> s,
-                        (existing, replacement) -> existing, TreeMap::new));
+                .filter(s -> s.getSearchTerm().toLowerCase().contains(lowerCaseQuery))
+                .collect(Collectors.toCollection(
+                        () -> new TreeSet<>(comparator)
+                ));
     }
 
-//    public List<Searchable> search(String query) {
-//        List<Searchable> results = new ArrayList<>();
-//
-//        if (query == null || query.isBlank()) {
-//            return results;
-//        }
-//
-//        String lowerCaseQuery = query.toLowerCase();
-//
-//        for (Searchable searchable : searchables) {
-//            if (searchable != null) {
-//                String lowerCaseSearchTerm = searchable.getSearchTerm().toLowerCase();
-//                if (lowerCaseSearchTerm.contains(lowerCaseQuery)) {
-//                    results.add(searchable);
-//                }
-//            }
-//        }
-//
-//        return results;
-//    }
+
 
 
     public Searchable findBestMatch(String query) throws BestResultNotFound {
@@ -59,7 +43,7 @@ public class SearchEngine {
                 String searchTerm = searchable.getSearchTerm().toLowerCase();
                 String lowerCaseQuery = query.toLowerCase();
 
-                int count = countOccurrences(searchTerm, lowerCaseQuery);
+                int count = (int) clone(searchTerm, lowerCaseQuery);
                 if (count > maxCount) {
                     maxCount = count;
                     bestMatch = searchable;
@@ -72,6 +56,10 @@ public class SearchEngine {
         }
 
         return bestMatch;
+    }
+
+    private Object clone(String searchTerm, String lowerCaseQuery) {
+        return null;
     }
 
     private int countOccurrences(String text, String substring) {
