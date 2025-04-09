@@ -2,33 +2,74 @@ package org.skypro.skyshop.search;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
+
 
 public class SearchEngine {
     private final Set<Searchable> searchables = new HashSet<>();
-    private final SearchableComparator comparator = new SearchableComparator();
-
-
 
     public void add(Searchable searchable) {
-        searchables.add(searchable);
+        if (searchable != null) {
+            searchables.add(searchable);
+        }
     }
-
 
     public Set<Searchable> search(String query) {
         if (query == null || query.isBlank()) {
             return Collections.emptySet();
         }
 
-        String lowerCaseQuery = query.toLowerCase();
+        final String lowerQuery = query.toLowerCase();
+
         return searchables.stream()
                 .filter(Objects::nonNull)
-                .filter(s -> s.getSearchTerm().toLowerCase().contains(lowerCaseQuery))
+                .filter(s -> s.getSearchTerm().toLowerCase().contains(lowerQuery))
                 .collect(Collectors.toCollection(
-                        () -> new TreeSet<>(comparator)
+                        () -> new TreeSet<>(
+                                Comparator.comparingInt((Searchable s) -> -s.getName().length())
+                                        .thenComparing(Searchable::getName)
+                        )
                 ));
     }
 
 
+
+
+//    public Set<Searchable> search(String query) {
+//        return Optional.ofNullable(query)
+//                .filter(q -> !q.isBlank())
+//                .map(String::toLowerCase)
+//                .map(lowerCaseQuery -> searchables.stream())
+//                .filter(Objects::nonNull)
+//                .filter(s -> s.getSearchTerm().toLowerCase().contains(lowerCaseQuery))
+//                .collect(Collectors.toCollection(() ->
+//                                new TreeSet<>(createSearchableComparator())
+//                        )
+//                )
+//
+//                .orElse(Collections.emptySet());
+//
+//    }
+
+    private Comparator<Searchable> createSearchableComparator() {
+        return Comparator
+                .comparingInt((Searchable s) -> -s.getName().length()) // Сортировка по убыванию длины
+                .thenComparing(Searchable::getName); // Затем по алфавиту
+    }
+
+    public Set<Searchable> findAll() {
+        return Collections.unmodifiableSet(searchables);
+    }
+
+    public void clear() {
+        searchables.clear();
+    }
 
 
     public Searchable findBestMatch(String query) throws BestResultNotFound {
