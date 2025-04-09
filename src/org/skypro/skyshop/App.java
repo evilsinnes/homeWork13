@@ -36,6 +36,7 @@ public class App {
         System.out.println("\nРезультаты поиска по запросу 'банан':");
         searchEngine.search("банан").forEach(System.out::println);
 
+
     }
 }
 

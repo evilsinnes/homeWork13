@@ -13,5 +13,6 @@ public class SearchableComparator implements Comparator<Searchable> {
         }
         return s1.getName().compareTo(s2.getName());
     }
+
 }
 

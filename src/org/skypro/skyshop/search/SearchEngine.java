@@ -13,6 +13,7 @@ import java.util.TreeSet;
 
 public class SearchEngine {
     private final Set<Searchable> searchables = new HashSet<>();
+    private final SearchableComparator comparator = new SearchableComparator();
 
     public void add(Searchable searchable) {
         if (searchable != null) {
@@ -25,37 +26,15 @@ public class SearchEngine {
             return Collections.emptySet();
         }
 
-        final String lowerQuery = query.toLowerCase();
+        String lowerQuery = query.toLowerCase();
 
         return searchables.stream()
                 .filter(Objects::nonNull)
                 .filter(s -> s.getSearchTerm().toLowerCase().contains(lowerQuery))
                 .collect(Collectors.toCollection(
-                        () -> new TreeSet<>(
-                                Comparator.comparingInt((Searchable s) -> -s.getName().length())
-                                        .thenComparing(Searchable::getName)
-                        )
-                ));
+                        () -> new TreeSet<>(comparator)));
     }
 
-
-
-
-//    public Set<Searchable> search(String query) {
-//        return Optional.ofNullable(query)
-//                .filter(q -> !q.isBlank())
-//                .map(String::toLowerCase)
-//                .map(lowerCaseQuery -> searchables.stream())
-//                .filter(Objects::nonNull)
-//                .filter(s -> s.getSearchTerm().toLowerCase().contains(lowerCaseQuery))
-//                .collect(Collectors.toCollection(() ->
-//                                new TreeSet<>(createSearchableComparator())
-//                        )
-//                )
-//
-//                .orElse(Collections.emptySet());
-//
-//    }
 
     private Comparator<Searchable> createSearchableComparator() {
         return Comparator
