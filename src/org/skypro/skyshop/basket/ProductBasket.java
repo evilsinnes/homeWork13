@@ -6,45 +6,39 @@ import java.util.*;
 
 
 public class ProductBasket {
-    private final Map<String, List<Product>> productsMap;
+    private final Map<String, List<Product>> productsMap = new HashMap<>();
 
 
-    public ProductBasket() {
-        this.productsMap = new HashMap<>();
-    }
+
 
     public void addProduct(Product product) {
         productsMap.computeIfAbsent(product.getName(), k -> new ArrayList<>()).add(product);
     }
 
     public int getTotalPrice() {
-        System.out.println();
-        return productsMap.values().stream()
+                return productsMap.values().stream()
                 .flatMap(List::stream)
                 .mapToInt(Product::getPrice)
                 .sum();
 
     }
-
+    private long getSpecialCount() {
+        return productsMap.values().stream()
+                .flatMap(List::stream)
+                .filter(Product::isSpecial)
+                .count();
+    }
     public void printProductInBasket() {
-
         if (productsMap.isEmpty()) {
             System.out.println("В корзине пусто");
             return;
         }
-        int specialCount = 0;
+        productsMap.values().stream()
+                .flatMap(List::stream)
+                .forEach(System.out::println);
 
-        for (List<Product> products : productsMap.values()) {
-            for (Product product : products) {
-                System.out.println(product);
-
-                if (product.isSpecial()) {
-                    specialCount++;
-                }
-            }
-        }
-        System.out.println("Итого " + getTotalPrice());
-        System.out.println("Специальных товаров: " + specialCount);
+        System.out.println("Итого: " + getTotalPrice());
+        System.out.println("Специальных товаров: " + getSpecialCount());
     }
 
     public boolean containsProduct(String productName) {
@@ -57,8 +51,8 @@ public class ProductBasket {
     }
 
     public List<Product> removeProductByName(String name) {
-        List<Product> removedProducts = productsMap.remove(name);
-        return removedProducts != null ? removedProducts : Collections.emptyList();
+               return Optional.ofNullable(productsMap.remove(name))
+                       .orElse(Collections.emptyList());
     }
 
 }
